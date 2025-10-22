@@ -1,0 +1,51 @@
+name: Publish to PyPI
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y expect
+          pip install -e .
+      - name: Run tests
+        run: ./test_all.sh
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # Required for trusted publishing
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+      # If you are not the project owner and for some reason want to test publish without changing
+      # the project name in pyproject.toml, uncomment this (change the suffix)
+      # - name: Rename package for Test PyPI
+      #   run: |
+      #     # Change package name in pyproject.toml for Test PyPI
+      #     sed -i 's/name = "better_exceptions"/name = "better-exceptions-xl0"/' pyproject.toml
+      - name: Build package
+        run: python -m build
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          # repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
