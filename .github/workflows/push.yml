@@ -20,7 +20,9 @@ jobs:
               # Test Python 3.7 on older OS versions that support it
               - os: ubuntu-22.04
                 python-version: "3.7"
-              - os: macos-13
+              # Python 3.7 only available on x86_64, not arm64
+              # macos-12 has better xterm color support than macos-13
+              - os: macos-12
                 python-version: "3.7"
           fail-fast: false
         steps:
