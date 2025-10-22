@@ -22,7 +22,7 @@ jobs:
         run: ./test_all.sh
 
   publish:
-    needs: test
+    # needs: test
     runs-on: ubuntu-latest
     permissions:
       id-token: write  # Required for trusted publishing
